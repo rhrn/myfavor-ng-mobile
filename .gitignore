@@ -3,3 +3,4 @@ lib
 platforms
 *.js
 *.js.map
+.DS_Store
