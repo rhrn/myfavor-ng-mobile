@@ -1,6 +1,10 @@
 import { Component, OnInit } from '@angular/core';
 import { Http } from '@angular/http';
 import { Page } from 'ui/page';
+import { Color } from 'color';
+import { topmost } from 'ui/frame';
+import * as platform from 'platform';
+import * as app from 'application';
 
 import { SwipeDirection } from 'ui/gestures';
 import * as SocialShare from 'nativescript-social-share';
@@ -12,28 +16,27 @@ import 'rxjs/add/operator/do';
 import 'rxjs/add/operator/map';
 import 'rxjs/add/operator/first';
 
+declare var android;
+
 const endpoint = 'https://myfavor.ru/joke/any.json';
 
 @Component({
   selector: 'my-app',
   template: `
-    <GridLayout class="p-20" (swipe)="loadJoke($event)" (doubleTap)="toggleActionBar()" (longPress)="share()">
+    <GridLayout class="p-20" [class.content-dark]="darkTheme">
 
-      <ActivityIndicator *ngIf="loading | async" busy="true" horizontalAlignment="center" verticalAlignment="center"></ActivityIndicator>
+      <ActivityIndicator class="spinner" *ngIf="loading | async" busy="true"></ActivityIndicator>
 
-      <ActionBar [title]="(joke | async).title">
-        <ActionItem text="Share" (tap)="share()" android.systemIcon="ic_menu_share_holo_dark" ios.systemIcon="9" ios.position="right"></ActionItem>
-      </ActionBar>
-
-      <ScrollView>
+      <ScrollView
+        (swipe)="loadJoke($event)"
+        (doubleTap)="switchTheme()"
+        (longPress)="share()">
 
         <Label
           class="content"
+          [class.content-dark]="darkTheme"
           [class.visible]="!(loading | async)"
           [text]="(joke | async).content"
-          (longPress)="share()"
-          (swipe)="loadJoke($event)"
-          (doubleTap)="toggleActionBar()"
           textWrap="true">
         </Label>
 
@@ -43,25 +46,30 @@ const endpoint = 'https://myfavor.ru/joke/any.json';
   `,
   styles: [`
 
-    ActionBar {
-      background-color: gray;
-      font-size: 12;
-      color: white;
+    .spinner {
+      horizontal-align: center;
+      veritical-align: center;
     }
 
     .content {
-      opacity: 0;
-      margin-left: 20;
-      margin-right: 20;
+      background-color: #fff;
       color: #000;
       font-family: 'Roboto-Thin', 'monospace';
       font-size: 23;
-      background-color: #fff;
+      opacity: 0;
+      margin-left: 40;
+      margin-right: 40;
+      vertical-align: center;
+    }
+
+    .content-dark {
+      color: #fff;
+      background-color: #000;
     }
 
     .visible {
       animation-name: show;
-      animation-duration: 1s;
+      animation-duration: .7s;
     }
 
     @keyframes show {
@@ -73,11 +81,17 @@ const endpoint = 'https://myfavor.ru/joke/any.json';
 })
 export class AppComponent implements OnInit {
 
+  darkTheme: boolean = false;
+
   loading = new BehaviorSubject(false);
 
   joke = new BehaviorSubject({ title: 'loading...', content: '...' });
 
-  constructor(private http: Http, private page: Page) {}
+  constructor(private http: Http, private page: Page) {
+    this.page.actionBarHidden = true;
+    this.page.backgroundSpanUnderStatusBar = true;
+    this.switchTheme();
+  }
 
   share() {
 
@@ -86,9 +100,29 @@ export class AppComponent implements OnInit {
       .subscribe(data => SocialShare.shareText(data.content, data.title));
   }
 
-  toggleActionBar() {
+  switchTheme() {
 
-    this.page.actionBarHidden = !this.page.actionBarHidden;
+    this.darkTheme = !this.darkTheme;
+
+    const color = this.darkTheme ? new Color('black') : new Color('white');
+
+    this.page.backgroundColor = color;
+
+    if (platform.isIOS) {
+      topmost().ios.controller.navigationBar.barStyle = this.darkTheme ? 1 : 0;
+    }
+
+    if (platform.isAndroid && platform.device.sdkVersion >= '21') {
+
+      const window = app.android.startActivity.getWindow();
+      window.setStatusBarColor(color.android);
+
+      const decorView = window.getDecorView();
+      let flag = this.darkTheme ? 0 : android.view.View.SYSTEM_UI_FLAG_LIGHT_STATUS_BAR;
+      decorView.setSystemUiVisibility(flag);
+
+    }
+
   }
 
   loadJoke(event?: any) {
