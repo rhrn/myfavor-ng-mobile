@@ -54,7 +54,7 @@ const endpoint = 'https://myfavor.ru/joke/any.json';
       margin-left: 20;
       margin-right: 20;
       color: #000;
-      font-family: 'OpenSans-CondLight', 'monospace';
+      font-family: 'Roboto-Thin', 'monospace';
       font-size: 23;
       background-color: #fff;
     }
