@@ -16,6 +16,8 @@ import 'rxjs/add/operator/do';
 import 'rxjs/add/operator/map';
 import 'rxjs/add/operator/first';
 
+import { FirebaseService } from './firebase.service';
+
 declare var android;
 
 const endpoint = 'https://myfavor.ru/joke/any.json';
@@ -87,7 +89,7 @@ export class AppComponent implements OnInit {
 
   joke = new BehaviorSubject({ title: 'loading...', content: '...' });
 
-  constructor(private http: Http, private page: Page) {
+  constructor(private http: Http, private page: Page, private firebaseService: FirebaseService) {
     this.page.actionBarHidden = true;
     this.page.backgroundSpanUnderStatusBar = true;
     this.switchTheme();
