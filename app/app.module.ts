@@ -3,6 +3,7 @@ import { NativeScriptModule } from "nativescript-angular/platform";
 import { NativeScriptHttpModule } from 'nativescript-angular/http';
 
 import { AppComponent } from "./app.component";
+import { FirebaseService } from './firebase.service';
 
 @NgModule({
     declarations: [AppComponent],
@@ -11,6 +12,7 @@ import { AppComponent } from "./app.component";
       NativeScriptModule,
       NativeScriptHttpModule
     ],
+    providers: [ { provide: FirebaseService, useValue: new FirebaseService() } ],
     schemas: [NO_ERRORS_SCHEMA]
 })
 export class AppModule { }
