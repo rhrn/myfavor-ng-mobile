@@ -11,10 +11,6 @@ export class FirebaseService {
 
     firebase.init({
       persist: true,
-      onPushTokenReceivedCallback: (token) => {
-        console.log("Firebase push token: " + token);
-        firebase.push(`/users/${this.user.uid}/pushTokens/`, token);
-      },
       onMessageReceivedCallback: (message) => {
         console.log("Message:");
         console.log(JSON.stringify(message, null, 2));
@@ -29,6 +25,11 @@ export class FirebaseService {
       .then(user => {
 
         this.user = user;
+
+        firebase.addOnMessageReceivedCallback(token => {
+          console.log("Firebase push token: " + token);
+          firebase.push(`/users/${this.user.uid}/pushTokens/`, token);
+        });
 
         console.log("User uid2: " + user.uid);
       })
