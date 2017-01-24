@@ -1,4 +1,4 @@
-import { Component, OnInit } from '@angular/core';
+import { Component, OnInit, ViewChild, ElementRef } from '@angular/core';
 import { Http } from '@angular/http';
 import { Page } from 'ui/page';
 import { Color } from 'color';
@@ -30,6 +30,7 @@ const endpoint = 'https://myfavor.ru/joke/any.json';
       <ActivityIndicator class="spinner" *ngIf="loading | async" busy="true"></ActivityIndicator>
 
       <ScrollView
+        #scrollView
         (swipe)="loadJoke($event)"
         (doubleTap)="switchTheme()"
         (longPress)="share()">
@@ -83,6 +84,8 @@ const endpoint = 'https://myfavor.ru/joke/any.json';
 })
 export class AppComponent implements OnInit {
 
+  @ViewChild('scrollView') scrollView: ElementRef;
+
   darkTheme: boolean = false;
 
   loading = new BehaviorSubject(false);
@@ -133,6 +136,10 @@ export class AppComponent implements OnInit {
       if (event.direction !== SwipeDirection.left && event.direction !== SwipeDirection.right) {
         return;
       }
+    }
+
+    if (this.scrollView) {
+      this.scrollView.nativeElement.scrollToVerticalOffset(0);
     }
 
     this.loading.next(true);
