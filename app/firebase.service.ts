@@ -31,6 +31,8 @@ export class FirebaseService {
           firebase.push(`/users/${this.user.uid}/pushTokens/`, token);
         });
 
+        firebase.setValue(`/users/${this.user.uid}/initDate`, new Date().toISOString());
+
         console.log("User uid2: " + user.uid);
       })
       .catch(error => console.log("firebase.init error: " + error));
