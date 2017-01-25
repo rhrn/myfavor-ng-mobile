@@ -17,6 +17,7 @@ import 'rxjs/add/operator/map';
 import 'rxjs/add/operator/first';
 
 import { FirebaseService } from './firebase.service';
+import * as appSettings from 'application-settings';
 
 declare var android;
 
@@ -32,7 +33,7 @@ const endpoint = 'https://myfavor.ru/joke/any.json';
       <ScrollView
         #scrollView
         (swipe)="loadJoke($event)"
-        (doubleTap)="switchTheme()"
+        (doubleTap)="setTheme()"
         (longPress)="share()">
 
         <Label
@@ -88,14 +89,27 @@ export class AppComponent implements OnInit {
 
   darkTheme: boolean = false;
 
+  DARK_THEME_KEY = 'darkTheme';
+
   loading = new BehaviorSubject(false);
 
   joke = new BehaviorSubject({ title: 'loading...', content: '...' });
 
+  isDarkThemeByTime() {
+    const hours = new Date().getHours();
+    return hours < 8 || hours >= 20;
+  }
+
   constructor(private http: Http, private page: Page, private firebaseService: FirebaseService) {
+
     this.page.actionBarHidden = true;
     this.page.backgroundSpanUnderStatusBar = true;
-    this.switchTheme();
+
+    const theme = appSettings.hasKey(this.DARK_THEME_KEY) ?
+      appSettings.getBoolean(this.DARK_THEME_KEY) :
+      this.isDarkThemeByTime();
+
+    this.switchTheme(theme);
   }
 
   share() {
@@ -105,9 +119,13 @@ export class AppComponent implements OnInit {
       .subscribe(data => SocialShare.shareText(data.content, data.title));
   }
 
-  switchTheme() {
+  setTheme() {
+    appSettings.setBoolean(this.DARK_THEME_KEY, this.switchTheme());
+  }
 
-    this.darkTheme = !this.darkTheme;
+  switchTheme(forceDarkTheme?): boolean {
+
+    this.darkTheme = forceDarkTheme !== undefined ? forceDarkTheme : !this.darkTheme;
 
     const color = this.darkTheme ? new Color('black') : new Color('white');
 
@@ -128,6 +146,7 @@ export class AppComponent implements OnInit {
 
     }
 
+    return this.darkTheme;
   }
 
   loadJoke(event?: any) {
