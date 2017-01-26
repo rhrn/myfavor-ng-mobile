@@ -38,6 +38,8 @@ const endpoint = 'https://myfavor.ru/joke/any.json';
 
         <Label
           class="content"
+          [class.content-small-screen]="screen === 'small'"
+          [class.content-big-screen]="screen === 'big'"
           [class.content-dark]="darkTheme"
           [class.visible]="!(loading | async)"
           [text]="(joke | async).content"
@@ -55,14 +57,22 @@ const endpoint = 'https://myfavor.ru/joke/any.json';
       veritical-align: center;
     }
 
+    .content-big-screen {
+      padding-left: 100;
+      padding-right: 100;
+    }
+
+    .content-small-screen {
+      padding-left: 30;
+      padding-right: 30;
+    }
+
     .content {
       background-color: #fff;
       color: #000;
       font-family: 'Roboto-Thin', 'monospace';
       font-size: 23;
       opacity: 0;
-      margin-left: 40;
-      margin-right: 40;
       vertical-align: center;
     }
 
@@ -88,6 +98,7 @@ export class AppComponent implements OnInit {
   @ViewChild('scrollView') scrollView: ElementRef;
 
   darkTheme: boolean = false;
+  screen: string = 'small';
 
   DARK_THEME_KEY = 'darkTheme';
 
@@ -101,6 +112,8 @@ export class AppComponent implements OnInit {
   }
 
   constructor(private http: Http, private page: Page, private firebaseService: FirebaseService) {
+
+    this.screen = platform.screen.mainScreen.widthDIPs <= 640 ? 'small' : 'big';
 
     this.page.actionBarHidden = true;
     this.page.backgroundSpanUnderStatusBar = true;
