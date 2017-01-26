@@ -73,7 +73,7 @@ const endpoint = 'https://myfavor.ru/joke/any.json';
 
     .visible {
       animation-name: show;
-      animation-duration: .7s;
+      animation-duration: .3s;
     }
 
     @keyframes show {
