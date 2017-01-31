@@ -5,6 +5,8 @@ import { Color } from 'color';
 import { topmost } from 'ui/frame';
 import * as platform from 'platform';
 import * as app from 'application';
+import * as connectivity from 'connectivity';
+import * as Toast from 'nativescript-toast';
 
 import { SwipeDirection } from 'ui/gestures';
 import * as SocialShare from 'nativescript-social-share';
@@ -15,6 +17,8 @@ import { BehaviorSubject } from 'rxjs/BehaviorSubject'
 import 'rxjs/add/operator/do';
 import 'rxjs/add/operator/map';
 import 'rxjs/add/operator/first';
+import 'rxjs/add/operator/retryWhen';
+import 'rxjs/add/operator/scan';
 
 import { FirebaseService } from './firebase.service';
 import * as appSettings from 'application-settings';
@@ -170,6 +174,13 @@ export class AppComponent implements OnInit {
       }
     }
 
+    const connectionType = connectivity.getConnectionType();
+
+    if (connectionType === connectivity.connectionType.none) {
+      Toast.makeText('Интернета нет ¯\\_(ツ)_/¯').show();
+      return;
+    }
+
     if (this.scrollView) {
       this.scrollView.nativeElement.scrollToVerticalOffset(0);
     }
@@ -178,8 +189,27 @@ export class AppComponent implements OnInit {
 
     this.http.get(endpoint)
       .map(res => res.json())
-      .do(() => this.loading.next(false))
-      .subscribe(data => this.joke.next(data.joke))
+      .retryWhen(errors => {
+
+        return errors
+          .scan((count, err) => {
+            
+            if (count > 2) {
+              throw err;
+            }
+
+            return ++count;
+          }, 0);
+
+      })
+      .subscribe(
+        data => this.joke.next(data.joke),
+        err => {
+          this.loading.next(false);
+          Toast.makeText('Не смог загрузить ¯\\_(ツ)_/¯').show();
+        },
+        () => this.loading.next(false)
+      );
   }
 
   ngOnInit() {
