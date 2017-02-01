@@ -108,7 +108,7 @@ export class AppComponent implements OnInit {
 
   loading = new BehaviorSubject(false);
 
-  joke = new BehaviorSubject({ title: 'loading...', content: '...' });
+  joke = new BehaviorSubject({ _id: null, title: 'loading...', content: '...' });
 
   isDarkThemeByTime() {
     const hours = new Date().getHours();
@@ -133,6 +133,7 @@ export class AppComponent implements OnInit {
 
     this.joke
       .first()
+      .do(data => this.firebaseService.saveShare(data._id))
       .subscribe(data => SocialShare.shareText(data.content, data.title));
   }
 

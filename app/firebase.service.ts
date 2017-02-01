@@ -40,4 +40,8 @@ export class FirebaseService {
     this.firebase = firebase;
   }
 
+  saveShare(id) {
+    this.firebase.setValue(`/users/${this.user.uid}/share/${id}`, this.firebase.ServerValue.TIMESTAMP);
+  }
+
 }
