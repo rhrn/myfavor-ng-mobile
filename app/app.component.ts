@@ -21,7 +21,7 @@ import 'rxjs/add/operator/retryWhen';
 import 'rxjs/add/operator/scan';
 
 import { FirebaseService } from './firebase.service';
-import * as appSettings from 'application-settings';
+import { StorageService } from './storage.service';
 
 declare var android;
 
@@ -115,15 +115,20 @@ export class AppComponent implements OnInit {
     return hours < 8 || hours >= 20;
   }
 
-  constructor(private http: Http, private page: Page, private firebaseService: FirebaseService) {
+  constructor(
+    private http: Http,
+    private page: Page,
+    private firebaseService: FirebaseService,
+    private storageService: StorageService
+  ) {
 
     this.screen = platform.screen.mainScreen.widthDIPs <= 640 ? 'small' : 'big';
 
     this.page.actionBarHidden = true;
     this.page.backgroundSpanUnderStatusBar = true;
 
-    const theme = appSettings.hasKey(this.DARK_THEME_KEY) ?
-      appSettings.getBoolean(this.DARK_THEME_KEY) :
+    const theme = this.storageService.store.hasKey(this.DARK_THEME_KEY) ?
+      this.storageService.store.getBoolean(this.DARK_THEME_KEY) :
       this.isDarkThemeByTime();
 
     this.switchTheme(theme);
@@ -138,7 +143,7 @@ export class AppComponent implements OnInit {
   }
 
   setTheme() {
-    appSettings.setBoolean(this.DARK_THEME_KEY, this.switchTheme());
+    this.storageService.store.setBoolean(this.DARK_THEME_KEY, this.switchTheme());
   }
 
   switchTheme(forceDarkTheme?): boolean {
