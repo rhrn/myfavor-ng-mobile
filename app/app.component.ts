@@ -107,8 +107,6 @@ export class AppComponent implements OnInit {
   darkTheme: boolean = false;
   screen: string = 'small';
 
-  DARK_THEME_KEY = 'darkTheme';
-
   scroll = new Subject();
 
   loading = new BehaviorSubject(false);
@@ -132,8 +130,8 @@ export class AppComponent implements OnInit {
     this.page.actionBarHidden = true;
     this.page.backgroundSpanUnderStatusBar = true;
 
-    const theme = this.storageService.store.hasKey(this.DARK_THEME_KEY) ?
-      this.storageService.store.getBoolean(this.DARK_THEME_KEY) :
+    const theme = this.storageService.hasTheme() ?
+      this.storageService.getTheme() :
       this.isDarkThemeByTime();
 
     this.switchTheme(theme);
@@ -156,7 +154,7 @@ export class AppComponent implements OnInit {
   }
 
   setTheme() {
-    this.storageService.store.setBoolean(this.DARK_THEME_KEY, this.switchTheme());
+    this.storageService.setTheme(this.switchTheme());
   }
 
   switchTheme(forceDarkTheme?): boolean {

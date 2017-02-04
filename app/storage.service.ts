@@ -4,6 +4,7 @@ import * as appSettings from 'application-settings';
 @Injectable()
 export class StorageService {
 
+  DARK_THEME_KEY = 'dark_theme';
   LAST_JOKE_KEY = 'last_joke';
   SCROLL_Y_KEY = 'scroll_y';
 
@@ -11,6 +12,18 @@ export class StorageService {
 
   constructor() {
     this.store = appSettings;
+  }
+
+  hasTheme() {
+    return this.store.hasKey(this.DARK_THEME_KEY);
+  }
+  
+  setTheme(theme) {
+    this.store.setBoolean(this.DARK_THEME_KEY, theme);
+  }
+
+  getTheme() {
+    this.store.getBoolean(this.DARK_THEME_KEY);
   }
 
   setScrollY(y): void {
