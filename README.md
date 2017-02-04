@@ -2,6 +2,22 @@
 
 ![demo](demo/myfavor.ru.gif)
 
+#### Features
+[x] Offline storage
+[x] Detect theme by day light
+[x] Detect big or small screen
+[x] Switch theme
+[x] Handle network connection with retries
+[x] Handle swipe directions
+[x] Handle scroll position
+[ ] Send push token
+[ ] Receive push data
+
+### Plugins
+* Firebase
+* Social share
+* Toast messages
+
 #### Test push token
 
 * Copy firebase configs
