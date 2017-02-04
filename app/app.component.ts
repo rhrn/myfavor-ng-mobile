@@ -13,12 +13,14 @@ import * as SocialShare from 'nativescript-social-share';
 
 import { Observable } from 'rxjs/Observable'
 import { BehaviorSubject } from 'rxjs/BehaviorSubject'
+import { Subject } from 'rxjs/Subject'
 
 import 'rxjs/add/operator/do';
 import 'rxjs/add/operator/map';
 import 'rxjs/add/operator/first';
 import 'rxjs/add/operator/retryWhen';
 import 'rxjs/add/operator/scan';
+import 'rxjs/add/operator/debounceTime';
 
 import { FirebaseService } from './firebase.service';
 import { StorageService } from './storage.service';
@@ -38,6 +40,7 @@ const endpoint = 'https://myfavor.ru/joke/any.json';
         #scrollView
         (swipe)="loadJoke($event)"
         (doubleTap)="setTheme()"
+        (scroll)="this.scroll.next($event)"
         (longPress)="share()">
 
         <Label
@@ -106,6 +109,8 @@ export class AppComponent implements OnInit {
 
   DARK_THEME_KEY = 'darkTheme';
 
+  scroll = new Subject();
+
   loading = new BehaviorSubject(false);
 
   joke = new BehaviorSubject({ _id: null, title: 'loading...', content: '...' });
@@ -132,6 +137,14 @@ export class AppComponent implements OnInit {
       this.isDarkThemeByTime();
 
     this.switchTheme(theme);
+
+    this.scroll
+      .debounceTime(300)
+      .subscribe(event => this.saveScroll(event));
+  }
+
+  saveScroll(event) {
+    this.storageService.setScrollY(event.scrollY);
   }
 
   share() {
@@ -209,7 +222,10 @@ export class AppComponent implements OnInit {
 
       })
       .subscribe(
-        data => this.joke.next(data.joke),
+        data => {
+          this.joke.next(data.joke);
+          this.storageService.setLastJoke(data.joke);
+        },
         err => {
           this.loading.next(false);
           Toast.makeText('Не смог загрузить ¯\\_(ツ)_/¯').show();
@@ -219,6 +235,25 @@ export class AppComponent implements OnInit {
   }
 
   ngOnInit() {
+
+    const joke = this.storageService.getLastJoke();
+
+    if (joke) {
+
+      this.joke.next(joke);
+
+      setTimeout(() => {
+
+        const scrollY = this.storageService.getScrollY();
+
+        if (scrollY && this.scrollView) {
+          this.scrollView.nativeElement.scrollToVerticalOffset(scrollY);
+        }
+
+      }, 300);
+
+      return;
+    }
 
     this.loadJoke();
   }
