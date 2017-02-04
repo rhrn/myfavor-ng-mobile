@@ -26,7 +26,7 @@ export class FirebaseService {
 
         this.user = user;
 
-        firebase.addOnMessageReceivedCallback(token => {
+        firebase.addOnPushTokenReceivedCallback(token => {
           console.log("Firebase push token: " + token);
           firebase.push(`/users/${this.user.uid}/pushTokens/`, token);
         });
