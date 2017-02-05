@@ -3,15 +3,15 @@
 ![demo](demo/myfavor.ru.gif)
 
 #### Features
-[x] Offline storage
-[x] Detect theme by day light
-[x] Detect big or small screen
-[x] Switch theme
-[x] Handle network connection with retries
-[x] Handle swipe directions
-[x] Handle scroll position
-[ ] Send push token
-[ ] Receive push data
+- [x] Offline storage
+- [x] Detect theme by day light
+- [x] Detect big or small screen
+- [x] Switch theme
+- [x] Handle network connection with retries
+- [x] Handle swipe
+- [x] Handle scroll
+- [x] Send push token
+- [x] Receive push data
 
 ### Plugins
 * Firebase
@@ -38,5 +38,5 @@ curl https://fcm.googleapis.com/fcm/send \
   -X POST \
   -H "Authorization: key=$SERVER_KEY" \
   -H "Content-Type: application/json" \
-  -d '{"notification":{"title": "My title", "text": "My text", "sound": "default"}, "data":{"foo":"bar"}, "priority": "High", "to": "'$DEVICE_TOKEN'"}'
+  -d '{"notification":{"title": "Ехали медведи на велосипеде", "sound": "default"}, "data":{"content": "Ехали медведи на велосипеде...", "type": "joke"}, "priority": "High", "to": "'$DEVICE_TOKEN'"}'
 ```

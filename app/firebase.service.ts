@@ -1,20 +1,19 @@
 import { Injectable } from '@angular/core';
 import firebase = require("nativescript-plugin-firebase");
+import { Subject } from 'rxjs/Subject'
 
 @Injectable()
 export class FirebaseService {
 
   firebase;
   user;
+  push = new Subject<any>();
 
   constructor() {
 
     firebase.init({
       persist: true,
-      onMessageReceivedCallback: (message) => {
-        console.log("Message:");
-        console.log(JSON.stringify(message, null, 2));
-      }
+      onMessageReceivedCallback: message => this.push.next(message)
     })
       .then(instance => {
 

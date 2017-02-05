@@ -21,6 +21,7 @@ import 'rxjs/add/operator/first';
 import 'rxjs/add/operator/retryWhen';
 import 'rxjs/add/operator/scan';
 import 'rxjs/add/operator/debounceTime';
+import 'rxjs/add/operator/filter';
 
 import { FirebaseService } from './firebase.service';
 import { StorageService } from './storage.service';
@@ -139,6 +140,20 @@ export class AppComponent implements OnInit {
     this.scroll
       .debounceTime(300)
       .subscribe(event => this.saveScroll(event));
+
+    this.firebaseService.push
+      .filter(message => !message.foreground)
+      .filter(message => message.type === 'joke')
+      .subscribe(message => {
+
+        this.joke.next({
+          _id: message._id,
+          content: message.content,
+          title: message.title
+        });
+
+      });
+
   }
 
   saveScroll(event) {
