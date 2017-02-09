@@ -22,8 +22,8 @@ export class StorageService {
     this.store.setBoolean(this.DARK_THEME_KEY, theme);
   }
 
-  getTheme() {
-    this.store.getBoolean(this.DARK_THEME_KEY);
+  getTheme(): boolean {
+    return this.store.getBoolean(this.DARK_THEME_KEY);
   }
 
   setScrollY(y): void {
