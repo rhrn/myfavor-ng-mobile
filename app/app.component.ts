@@ -35,10 +35,9 @@ const endpoint = 'https://myfavor.ru/joke/any.json';
   template: `
     <GridLayout class="p-20" [class.content-dark]="darkTheme">
 
-      <ActivityIndicator class="spinner" *ngIf="loading | async" busy="true"></ActivityIndicator>
-
       <ScrollView
         #scrollView
+        [class.visible]="!(loading | async)"
         (swipe)="loadJoke($event)"
         (doubleTap)="setTheme()"
         (scroll)="this.scroll.next($event)"
@@ -49,12 +48,13 @@ const endpoint = 'https://myfavor.ru/joke/any.json';
           [class.content-small-screen]="screen === 'small'"
           [class.content-big-screen]="screen === 'big'"
           [class.content-dark]="darkTheme"
-          [class.visible]="!(loading | async)"
           [text]="(joke | async).content"
           textWrap="true">
         </Label>
 
       </ScrollView>
+
+      <ActivityIndicator class="spinner" *ngIf="loading | async" busy="true"></ActivityIndicator>
 
     </GridLayout>
   `,
@@ -75,12 +75,15 @@ const endpoint = 'https://myfavor.ru/joke/any.json';
       padding-right: 30;
     }
 
+    .scroll {
+      opacity: 0;
+    }
+
     .content {
       background-color: #fff;
       color: #000;
       font-family: 'Roboto-Thin', 'monospace';
       font-size: 23;
-      opacity: 0;
       vertical-align: center;
     }
 
@@ -91,7 +94,7 @@ const endpoint = 'https://myfavor.ru/joke/any.json';
 
     .visible {
       animation-name: show;
-      animation-duration: .3s;
+      animation-duration: 0.5s;
     }
 
     @keyframes show {
