@@ -186,11 +186,20 @@ export class AppComponent implements OnInit {
 
     if (platform.isAndroid && platform.device.sdkVersion >= '21') {
 
+      let flag = android.view.View.SYSTEM_UI_FLAG_FULLSCREEN;
+
       const window = app.android.startActivity.getWindow();
-      window.setStatusBarColor(color.android);
+
+      if (platform.device.sdkVersion >= '23') {
+
+        window.setStatusBarColor(color.android);
+
+        flag = this.darkTheme ?
+          android.view.View.SYSTEM_UI_FLAG_VISIBLE :
+          android.view.View.SYSTEM_UI_FLAG_LIGHT_STATUS_BAR;
+      }
 
       const decorView = window.getDecorView();
-      let flag = this.darkTheme ? 0 : android.view.View.SYSTEM_UI_FLAG_LIGHT_STATUS_BAR;
       decorView.setSystemUiVisibility(flag);
 
     }
