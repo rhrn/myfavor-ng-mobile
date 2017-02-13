@@ -229,10 +229,6 @@ export class AppComponent implements OnInit {
       return;
     }
 
-    if (this.scrollView) {
-      this.scrollView.nativeElement.scrollToVerticalOffset(0);
-    }
-
     this.loading = true;
 
     this.http.get(endpoint)
@@ -252,6 +248,11 @@ export class AppComponent implements OnInit {
       })
       .subscribe(
         data => {
+
+          if (this.scrollView) {
+            this.scrollView.nativeElement.scrollToVerticalOffset(0);
+          }
+
           this.joke.next(data.joke);
           this.storageService.setLastJoke(data.joke);
         },
