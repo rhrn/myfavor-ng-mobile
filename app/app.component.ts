@@ -37,7 +37,7 @@ const endpoint = 'https://myfavor.ru/joke/any.json';
 
       <ScrollView
         #scrollView
-        [class.visible]="!(loading | async)"
+        [class.visible]="loading"
         (swipe)="loadJoke($event)"
         (doubleTap)="setTheme()"
         (scroll)="this.scroll.next($event)"
@@ -54,7 +54,7 @@ const endpoint = 'https://myfavor.ru/joke/any.json';
 
       </ScrollView>
 
-      <ActivityIndicator class="spinner" *ngIf="loading | async" busy="true"></ActivityIndicator>
+      <ActivityIndicator class="spinner" *ngIf="loading" busy="true"></ActivityIndicator>
 
     </GridLayout>
   `,
@@ -113,7 +113,7 @@ export class AppComponent implements OnInit {
 
   scroll = new Subject();
 
-  loading = new BehaviorSubject(false);
+  loading: boolean = false;
 
   joke = new BehaviorSubject({ _id: null, title: 'loading...', content: '...' });
 
@@ -212,6 +212,10 @@ export class AppComponent implements OnInit {
 
   loadJoke(event?: any) {
 
+    if (this.loading) {
+      return;
+    }
+
     if (event) {
       if (event.direction !== SwipeDirection.left && event.direction !== SwipeDirection.right) {
         return;
@@ -229,7 +233,7 @@ export class AppComponent implements OnInit {
       this.scrollView.nativeElement.scrollToVerticalOffset(0);
     }
 
-    this.loading.next(true);
+    this.loading = true;
 
     this.http.get(endpoint)
       .map(res => res.json())
@@ -252,10 +256,10 @@ export class AppComponent implements OnInit {
           this.storageService.setLastJoke(data.joke);
         },
         err => {
-          this.loading.next(false);
+          this.loading = false;
           Toast.makeText('Не смог загрузить ¯\\_(ツ)_/¯').show();
         },
-        () => this.loading.next(false)
+        () => this.loading = false
       );
   }
 
