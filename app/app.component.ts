@@ -37,7 +37,7 @@ const endpoint = 'https://myfavor.ru/joke/any.json';
 
       <ScrollView
         #scrollView
-        [class.visible]="loading"
+        [class.visible]="!loading"
         (swipe)="loadJoke($event)"
         (doubleTap)="setTheme()"
         (scroll)="this.scroll.next($event)"
@@ -94,7 +94,7 @@ const endpoint = 'https://myfavor.ru/joke/any.json';
 
     .visible {
       animation-name: show;
-      animation-duration: 0.5s;
+      animation-duration: 0.6s;
     }
 
     @keyframes show {
