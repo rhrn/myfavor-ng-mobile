@@ -66,13 +66,11 @@ const endpoint = 'https://myfavor.ru/joke/any.json';
     }
 
     .content-big-screen {
-      padding-left: 100;
-      padding-right: 100;
+      width: 65%;
     }
 
     .content-small-screen {
-      padding-left: 30;
-      padding-right: 30;
+      width: 80%;
     }
 
     .scroll {
